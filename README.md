@@ -17,7 +17,7 @@
       - [x] Use Nikto 
       - [] Include an intial fast scan at start
       - [] Rustscan 
-      - [] FFUF/Gobuster Option
+      - [x] FFUF/Gobuster Option
       - [] Include Switches 
       - [] Add a -h prompt menu 
       
