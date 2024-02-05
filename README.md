@@ -8,9 +8,6 @@
  - Recon.sh 
     `chmod +x Recon.sh`
     `. ~/Recon.sh`
- - recon.sh 
-    `chmod +x recon.sh`
-    `./recon.sh` or `bash recon.sh`
    
 ### To-Do 
  - Improve the script to use 
