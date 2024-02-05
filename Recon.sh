@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #---------------------------------------------
-# Combination Script of Dir.sh & Recon.sh
+# Script to Automate The Intial Recon Phase
 #---------------------------------------------
 
 # Colors
@@ -12,39 +12,38 @@
 	Purple=$'\e[1;35m'
 	White=$'\e[0m'
 
-# Get Directory Name 
-	read -p 'Directory Name: ' Dir 
-	echo""
-
-# Make Directory 
-	mkdir $Dir
-
-# Move to Directory
-	cd $Dir
-
 # Create Markdown file 
-	subl Notes.md -b
+	subl -b Notes.md 
+
+# Create folder for basic scans
+	mkdir Basic_Scans
 
 # Format the file
 	echo 'Notes 
 ------------------------------------------------------ 
-	Now 
+	IPs:
 		- 
-		
-	Noted 
+		-
+		-
+
+
+	Findings:
+		-
+		-
 		- 
 
-	Credentials 
+
+
+
+	Credentials:
+		-
 		- 
+		- 
+
+
+
 
 	' >> Notes.md
-
-# Get IP Address 
-	read -p 'Enter the IP Address: '$Green IP
-
-# Send IP address to notes 
-	echo IP Address: $IP >> Notes.md
-	echo"" $Blue
 
 # Artwork
 	echo '
@@ -60,28 +59,53 @@
      \__\|         \__\/         \__\/         \__\/         \__\/    
 	'
 
+# Get IP Address 
+	read -p 'Enter the IP Address: '$Green IP
+	echo"" $Blue
+	echo $IP >> Notes.md
+
 # Nmap Portion 
 	echo $Purple
 	echo "----------------------- Basic Nmap Scan --------------------------"
 	echo $White
-	nmap -A $IP -p1-65535 -o nmap.txt 
+	nmap -A -sV -sC -vv $IP -oN Scan.txt 
 	echo""
+	mv Scan.txt Basic_Scans
 
-# Gobuster Portion 
-	echo $Red
-	echo "----------------------- Gobuster Scan --------------------------"
-	echo $White
-	gobuster dir -u $IP -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -n -e -o dir.txt -x html,txt,php -t 80
-	echo ""
-
+# GoBuster Scan
 	echo $Purple
-	echo "----------------------- Nmap Vuln Scan --------------------------"
-	echo $White
-	nmap --script vuln $IP -oN Nmapvuln.txt
-	echo""
+	echo "----------------------- GoBsuter Scan --------------------------"	
+	echo	$White
+	gobuster dir -u $IP -w /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt -x php,txt,html,bak,css,js,cgi,py,sh
 
- #Nikto Portion
+# Nikto Portion
 	echo $Orange
 	echo "----------------------- Nikto Scan --------------------------"
 	echo $White
 	nikto -h $IP -output nikto.txt
+	mv nikto.txt Basic_Scans
+
+
+# FFUF Portion "optional"
+	read -p 'Do you want to Fuff '$Green ANS
+	if [ $ANS = yes ]
+	then
+		echo $Red
+		echo "----------------------- FFUF Scan --------------------------"
+		echo $White
+		ffuf -c -w /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt -u http://$IP/FUZZ -recursion -r -t 50 -o ffuf.txt
+		echo ""
+		mv ffuf.txt Basic_Scans
+	else 
+		echo "Okay!"
+	fi
+		
+
+
+
+
+
+
+
+
+
